@@ -5,8 +5,8 @@ import {PlaceWithoutId} from '../types';
 const placesRouter = express.Router();
 
 placesRouter.get('/', async (req, res) => {
-  const categories = await fileDb.getPlaces();
-  const resPlaces = categories.map(el => ({id: el.id, title: el.title}));
+  const places = await fileDb.getPlaces();
+  const resPlaces = places.map(el => ({id: el.id, title: el.title}));
   return res.send(resPlaces);
 });
 
@@ -47,18 +47,21 @@ placesRouter.delete('/:id', async (req, res) => {
 });
 
 placesRouter.put('/:id', async (req, res) => {
-  if (!req.body.title) {
-    return res.status(400).send('Cant put place! Title are required');
+  if (!req.body.title && !req.body.description) {
+    return res.status(400).send('Cant update place! No data to Update');
   }
-  const place: PlaceWithoutId = {
-    title: req.body.title,
-    description: req.body.description ? req.body.description : '',
-  };
-  const putPlace = await fileDb.putPlace(req.params.id, place);
-  if (typeof putPlace === 'number') {
-    return res.status(404).send('Cant put place! Place not found');
+  const places = await fileDb.getPlaces();
+  const index = places.findIndex(place => place.id === req.params.id);
+  if (index > -1) {
+    const newPlace: PlaceWithoutId = {
+      title: req.body.title ? req.body.title : places[index].title,
+      description: req.body.description ? req.body.description : places[index].description,
+    };
+    const putPlace = await fileDb.putPlace(req.params.id, index, newPlace);
+    return res.status(200).send(putPlace);
+  } else {
+    return res.status(404).send('Place not found.cant update place');
   }
-  return res.status(200).send(putPlace);
 });
 
 export default placesRouter;

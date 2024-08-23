@@ -41,15 +41,10 @@ const fileDb = {
       return index;
     }
   },
-  async putCategory(id: string, category: CategoryWithoutId) {
-    const index = data.categories.findIndex(el => el.id === id);
-    if(index>-1){
-      data.categories[index] = {id, ...category};
-      await this.save();
-      return data.categories[index];
-    }else {
-      return index
-    }
+  async putCategory(id: string, index: number, category: CategoryWithoutId) {
+    data.categories[index] = {id, ...category};
+    await this.save();
+    return data.categories[index];
   },
 
   async getItems() {
@@ -62,7 +57,7 @@ const fileDb = {
     await this.save();
     return newItem;
   },
-  async removeItem(id: string,item:string) {
+  async removeItem(id: string) {
     const index = data.items.findIndex(el => el.id === id);
     if (index > -1) {
       data.items.splice(index, 1);
@@ -70,15 +65,11 @@ const fileDb = {
     }
     return index;
   },
-  async putItem(id: string, item: ItemWithoutId) {
-    const index = data.items.findIndex(el => el.id === id);
-    if(index>-1){
-      data.items[index] = {id, ...item};
-      await this.save();
-      return data.items[index];
-    }else {
-      return index
-    }
+  async putItem(id: string, index: number, item: ItemWithoutId) {
+    data.items[index] = {id, ...item};
+    await this.save();
+    return data.items[index];
+
   },
 
 
@@ -100,15 +91,10 @@ const fileDb = {
     }
     return index;
   },
-  async putPlace(id: string, place: PlaceWithoutId) {
-    const index = data.places.findIndex(el => el.id === id);
-    if(index>-1){
-      data.places[index] = {id, ...place};
-      await this.save();
-      return data.places[index];
-    }else {
-      return index
-    }
+  async putPlace(id: string, index: number, place: PlaceWithoutId) {
+    data.places[index] = {id, ...place};
+    await this.save();
+    return data.places[index];
   },
   async save() {
     return fs.writeFile(filename, JSON.stringify(data, null, 2));
