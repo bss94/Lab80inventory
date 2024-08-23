@@ -3,6 +3,7 @@ import fileDb from './fileDb';
 import cors from 'cors';
 import config from './config';
 import categoriesRouter from './routers/categories';
+import placesRouter from './routers/places';
 
 const app = express();
 const port = 8000;
@@ -11,7 +12,7 @@ app.use(cors(config.corsOptions));
 app.use(express.json());
 app.use(express.static('public'));
 app.use('/categories', categoriesRouter);
-//app.use('/places', placesRouter);
+app.use('/places', placesRouter);
 //app.use('/items', itemsRouter);
 
 const run = async () => {
