@@ -1,6 +1,5 @@
 import express from 'express';
 import fileDb from '../fileDb';
-import placesRouter from './places';
 import {imagesUpload} from '../multer';
 import {ItemWithoutId} from '../types';
 
