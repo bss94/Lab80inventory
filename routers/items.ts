@@ -8,7 +8,12 @@ const itemsRouter = express.Router();
 
 itemsRouter.get('/', async (req, res) => {
   const items = await fileDb.getItems();
-  const resItems = items.map(el => ({id: el.id, title: el.title}));
+  const resItems = items.map(el => ({
+    id: el.id,
+    categoryId: el.categoryId,
+    placeId: el.placeId,
+    title: el.title
+  }));
   return res.send(resItems);
 });
 
@@ -22,7 +27,7 @@ itemsRouter.get('/:id', async (req, res) => {
   }
 });
 
-itemsRouter.post('/', imagesUpload.single('image'), async (req, res) => {
+itemsRouter.post('/', imagesUpload.single('photo'), async (req, res) => {
   if (!req.body.title || !req.body.categoryId || !req.body.placeId) {
     return res.status(400).send('Title, placeId and categoryId are required!');
   } else if (req.body.date && isNaN(new Date(req.body.date).getDate())) {
@@ -37,7 +42,11 @@ itemsRouter.post('/', imagesUpload.single('image'), async (req, res) => {
       date: req.body.date ? req.body.date : new Date().toISOString(),
     };
     const savedItem = await fileDb.addItem(item);
-    return res.send(savedItem);
+    if (savedItem) {
+      return res.send(savedItem);
+    } else {
+      return res.status(404).send('Item cant create! categoryId or placeId not found on categories and places!');
+    }
   }
 });
 
@@ -49,9 +58,9 @@ itemsRouter.delete('/:id', async (req, res) => {
   return res.status(200).send('Item delete successfully.');
 });
 
-itemsRouter.put('/:id', imagesUpload.single('image'), async (req, res) => {
-  if (!req.body.title && !req.body.categoryId && !req.body.placeId && !req.body.description && !req.body.photo && !req.body.date) {
-    return res.status(400).send({error: 'No data to Update'});
+itemsRouter.put('/:id', imagesUpload.single('photo'), async (req, res) => {
+  if (!req.body.title && !req.body.categoryId && !req.body.placeId && !req.body.description && !req.body.photo && !req.body.date && !req.file) {
+    return res.status(400).send('No data to Update');
   }
   if (req.body.date && isNaN(new Date(req.body.date).getDate())) {
     return res.status(400).send('Date should be a valid date');
@@ -68,7 +77,12 @@ itemsRouter.put('/:id', imagesUpload.single('image'), async (req, res) => {
         date: req.body.date ? req.body.date : new Date().toISOString(),
       };
       const savedItem = await fileDb.putItem(req.params.id, index, item);
-      return res.send(savedItem);
+      if (savedItem) {
+        return res.send(savedItem);
+      } else {
+        return res.status(404).send('Item cant update! categoryId or placeId not found on categories and places!');
+      }
+
     } else {
       return res.status(404).send('Item not found.');
     }

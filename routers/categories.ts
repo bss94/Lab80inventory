@@ -48,7 +48,7 @@ categoriesRouter.delete('/:id', async (req, res) => {
 
 categoriesRouter.put('/:id', async (req, res) => {
   if (!req.body.title && !req.body.description) {
-    return res.status(400).send('Cant put category! No data to update');
+    return res.status(400).send('No data to update category!');
   }
   const categories = await fileDb.getCategories();
   const index = categories.findIndex(el => el.id === req.params.id);
